@@ -105,7 +105,7 @@ itself is not typechecked; your copy under `src/modules/` is.
 Point students at the module from the unit it accompanies:
 
 ```markdown
-🎛️ [Interactive: Statistical Foundations](https://bsheese.github.io/courses_interactive/377/17_0)
+🎛️ [Interactive: Statistical Foundations](https://bsheese.github.io/interactive_course_materials/377/17_0)
 ```
 
 Deep-link a single visual with `?step=N` (1-based), e.g. `…/377/17_0?step=9`

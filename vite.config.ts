@@ -22,7 +22,7 @@ function spaFallback(): Plugin {
 
 export default defineConfig(() => ({
   // Override with BASE_PATH=/ for local static previews or a custom domain.
-  base: process.env.BASE_PATH ?? '/courses_interactive/',
+  base: process.env.BASE_PATH ?? '/interactive_course_materials/',
   plugins: [react(), tailwindcss(), spaFallback()],
   resolve: {
     alias: {

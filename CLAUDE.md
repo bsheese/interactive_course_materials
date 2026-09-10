@@ -1,4 +1,4 @@
-# courses_interactive — working notes
+# interactive_course_materials — working notes
 
 Interactive companion pages for the cs225 / cs377 / cs387 notebooks. One Vite +
 React app, one route per module, published to GitHub Pages.
@@ -29,7 +29,7 @@ components). `src/modules/registry.ts` lists every module with a lazy `import()`
 ## Commands
 
 ```bash
-npm run dev        # localhost:3000/courses_interactive/
+npm run dev        # localhost:3000/interactive_course_materials/
 npm run typecheck
 npm run build      # typecheck + build; also writes dist/404.html
 npm run preview

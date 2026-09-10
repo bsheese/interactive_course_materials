@@ -1,4 +1,4 @@
-# courses_interactive
+# interactive_course_materials
 
 Interactive companion pages for the course notebooks — visual sandboxes a
 student can drag, slide and break, built to sit alongside a unit rather than
@@ -8,7 +8,7 @@ One React app publishes every module. A module is a deck of slides plus the
 widgets those slides embed; the shared kit supplies everything else (navigation,
 keyboard control, math rendering, dataset viewer, theme).
 
-**Live site:** `https://bsheese.github.io/courses_interactive/`
+**Live site:** `https://bsheese.github.io/interactive_course_materials/`
 (deep links: `/377/17_0`, and `/377/17_0?step=9` for one specific slide)
 
 ## Modules
@@ -24,7 +24,7 @@ source of truth for this list.
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000/courses_interactive/
+npm run dev        # http://localhost:3000/interactive_course_materials/
 npm run typecheck  # tsc --noEmit
 npm run build      # typecheck + production build into dist/
 npm run preview    # serve the built site
