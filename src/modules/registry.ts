@@ -42,6 +42,17 @@ export const MODULES: ModuleMeta[] = [
       'https://github.com/bsheese/cs377/tree/main/17_regression_crossval/17_0_Preliminaries',
     load: () => import('./377/17_0/index'),
   },
+  {
+    course: '377',
+    id: '17_1',
+    title: 'Simple Linear Regression',
+    description:
+      'The whole SLR arc: fitting in two libraries, significance built from shuffles and resamples, the LINE assumptions, influence and Cook’s distance, log transformations, and the generalization test.',
+    status: 'published',
+    sourceUnit: '17_regression_crossval/17_1_SLR',
+    notebookUrl: 'https://github.com/bsheese/cs377/tree/main/17_regression_crossval/17_1_SLR',
+    load: () => import('./377/17_1/index'),
+  },
 ];
 
 export const courseById = (id: string): CourseMeta | undefined =>

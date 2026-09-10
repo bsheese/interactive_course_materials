@@ -16,6 +16,7 @@ keyboard control, math rendering, dataset viewer, theme).
 | Course | Module | Accompanies |
 |---|---|---|
 | cs377 | `17_0` — Statistical Foundations | [`17_regression_crossval/17_0_Preliminaries`](https://github.com/bsheese/cs377/tree/main/17_regression_crossval/17_0_Preliminaries) |
+| cs377 | `17_1` — Simple Linear Regression | [`17_regression_crossval/17_1_SLR`](https://github.com/bsheese/cs377/tree/main/17_regression_crossval/17_1_SLR) |
 
 The registry in [`src/modules/registry.ts`](src/modules/registry.ts) is the
 source of truth for this list.
@@ -45,8 +46,10 @@ src/
   modules/
     registry.ts           every module, lazily imported
     377/17_0/             one module: slides, widgets, its own data & adapters
+    377/17_1/             ditto, plus real course datasets in data.ts
   pages/                  landing page, module route, 404
 templates/module_template/  copy this to start a new module
+scripts/                  data extraction from the course repos
 ```
 
 The shell knows nothing about any subject. Slides name their widget with a
@@ -65,6 +68,22 @@ once under **Settings → Pages → Source: GitHub Actions**.
 
 Because Pages has no SPA rewrite, the build copies `index.html` to `404.html`
 so deep links resolve to the app shell and the router takes over.
+
+## Datasets
+
+17_1's widgets run on the real course data (Palmer Penguins, Gapminder 2007,
+Auto MPG, Ames), extracted from the cs377 repo's vendored CSVs into
+`src/modules/377/17_1/data.ts` so the numbers on screen match the numbers in
+the notebooks — the penguins fit reports slope 50.15 and t = 32.56, exactly as
+statsmodels does. Regenerate with:
+
+```bash
+python scripts/extract_17_1_data.py ~/repos/courses_public/377/data
+```
+
+Simulated data (bootstrap resamples, permutation shuffles, the assumption
+demos) is seeded, so the projector and a student's laptop show identical
+numbers.
 
 ## Relationship to the course repos
 
