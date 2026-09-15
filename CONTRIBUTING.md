@@ -53,7 +53,7 @@ it off the index while you work (the route still resolves if you know it).
 | `section` / `sectionTitle` | groups slides into parts; drives the footer pills and number-key jumps |
 | `title` / `subtitle` | the subtitle renders in quotes, italic |
 | `paragraphs` | the left-hand exposition, one string per paragraph |
-| `keyTakeaways` | bulleted card under the formula |
+| `keyTakeaways` | bulleted card rendered under the widget, in the right column |
 | `formula` | LaTeX plus per-symbol glossary, rendered with KaTeX |
 | `note` | the "Editorial Note" aside |
 | `widget` | key into the module's `widgets` map; omit for a text-only slide |
@@ -61,6 +61,31 @@ it off the index while you work (the route still resolves if you know it).
 Name the sections in `index.ts` via `sectionTitles` — those names appear on the
 footer jump pills. Section boundaries are derived from the slides themselves, so
 inserting a slide never desynchronises the navigation.
+
+### Writing style for the exposition
+
+The `paragraphs` are the lesson, not a caption for the widget. Write them for a
+student meeting the idea for the first time, not for someone who already knows
+it. `377/17_0` and `377/17_1` are the reference for the target voice.
+
+- **Scaffold every step.** Say what question the slide is answering, why the
+  previous idea was not enough, what the new idea is, and how to read it.
+  Four to six paragraphs per slide is normal; three terse ones is too few.
+- **Compute the example in the text.** "Half the deviations are −6 and half are
+  +6, so fifty −6s and fifty +6s add to 0" teaches; "the sum is zero" does not.
+- **Point at the widget explicitly.** Name the control ("press 'Draw New
+  Student'", "use the noise slider") and say what the student should notice.
+  Check the widget's actual labels before writing the sentence.
+- **Plain, unhurried voice.** No punchy fragments, no exclamation marks, no
+  "stark" / "ultimate" / "mastery". Prefer a full sentence over a bullet
+  unless the items are genuinely a list. Define a term the first time it
+  appears and connect it back to the earlier idea it generalises (residuals
+  are deviations from a line, RSS is TSS around a line, and so on).
+- **Takeaways are full sentences.** They sit after the widget as a recap, so
+  each one should stand on its own without the paragraph that produced it.
+- **Notes carry caveats, not content.** Use `note` for the aside a careful
+  instructor would add (Bessel's correction, "the intercept is not
+  interpretable here"), and keep the main thread in `paragraphs`.
 
 ## 4. Write the widgets
 

@@ -26,6 +26,14 @@ components). `src/modules/registry.ts` lists every module with a lazy `import()`
 - **Deterministic data.** Seed randomness with `seededRandom` from `@kit/stats`.
 - **Adding a module touches one shared line** — its registry entry.
 
+## Writing the exposition
+
+Slide `paragraphs` are the lesson, aimed at a student seeing the idea for the
+first time: scaffold each step, compute the worked example in the text, name
+the widget control and say what to notice, and keep a plain, unhurried voice
+with no punchy fragments. `377/17_0` and `377/17_1` set the target; the full
+checklist is in CONTRIBUTING.md § "Writing style for the exposition".
+
 ## Commands
 
 ```bash

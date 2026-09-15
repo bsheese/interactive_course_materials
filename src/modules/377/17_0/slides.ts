@@ -9,14 +9,15 @@ export const slides: Slide[] = [
     title: 'The Unseen Student & The Baseline Mean',
     subtitle: 'Why guessing the mean minimizes error in either direction',
     paragraphs: [
-      "Let's say we want to make a prediction about the height of a student we haven't met yet. We don't know anything about the student, but we do know the heights of 100 students who go to the same school.",
-      "In this situation, our best bet for guessing the height of an unknown student is to calculate the average height of the 100 students and guess that average.",
-      "We may be way off. The student might be considerably taller or considerably shorter than the 100-student average. What we've really done when we guess the average is not say, \"I think this student of unseen height will be exactly this height.\" Instead, what we are saying is: \"I have no idea what the height of this student will be. But, if I guess the mean, I can minimize how wrong I might be in either direction.\""
+      "This unit builds up to linear regression one small step at a time, and it starts with a question that sounds almost too simple: how do you predict something when you have very little to go on? Suppose we want to guess the height of a student we have never met. We know nothing about this particular student. What we do have is a list of the heights of 100 other students who attend the same school.",
+      "The sensible move is to compute the average height of those 100 students and guess that. If the average is 66 inches, we predict 66 inches. This is our first model, and it is worth pausing on what it does and does not claim. It does not claim that the unseen student is exactly 66 inches tall. Almost certainly they are not. The student might be five feet, or might be six and a half.",
+      "What guessing the mean really says is something more modest: \"I have no idea how tall this student is. But if I guess the mean, I keep my error as small as I can on average, and I am equally likely to be too high as too low.\" That is what makes the mean a good baseline. It is the guess you make when you have no other information, and the point of everything that follows is to see whether extra information lets us beat it.",
+      "Press 'Draw New Student' in the widget a few times. Each draw pulls a new student from the same school, and the widget shows how far off the mean-guess was. Some draws land close and some land far, but notice that the misses are not biased in one direction: the guess is too high about as often as it is too low.",
     ],
     keyTakeaways: [
-      'Guessing the mean is our baseline model for all future predictions.',
-      'Models aim to minimize error rather than divine exact psychic predictions.',
-      'Real forecasters quantify uncertainty; gamblers rely on raw chance.'
+      'Guessing the mean is our baseline model. Every later model will be judged by whether it beats this.',
+      'A model does not promise to be exactly right. It aims to keep its errors as small as possible.',
+      'The mean is the guess that is equally likely to be too high or too low, which is why it makes a fair starting point.',
     ],
     formula: {
       latex: '\\bar{y} = \\frac{1}{N} \\sum_{i=1}^{N} y_i',
@@ -24,10 +25,10 @@ export const slides: Slide[] = [
       terms: [
         { symbol: '\\bar{y}', meaning: 'Sample Mean of height (inches)' },
         { symbol: 'N', meaning: 'Number of observed students (e.g. 100)' },
-        { symbol: 'y_i', meaning: 'Height of the i-th individual student' }
-      ]
+        { symbol: 'y_i', meaning: 'Height of the i-th individual student' },
+      ],
     },
-    widget: 'baseline-prediction'
+    widget: 'baseline-prediction',
   },
   {
     id: 'p1-2-spread',
@@ -36,18 +37,18 @@ export const slides: Slide[] = [
     title: 'Sample A vs. Sample B: Same Mean, Different Reality',
     subtitle: 'Why the mean alone fails to describe the shape of the data',
     paragraphs: [
-      "Imagine we have two distinct samples of 100 students' heights measured in inches:",
-      "• For Sample A, we measured 100 students, and every single one of them was exactly 66 inches tall (five and a half feet).",
-      "• For Sample B, we measured 100 students; 50 of them were 60 inches tall (five feet) and the other 50 were 72 inches tall (six feet).",
-      "If we followed our basic model of predicting the mean, both samples would lead us to predict 66 inches. However, if we pay attention to the spread of our data (its distribution), we might have much less confidence guessing the mean for Sample B.",
-      "Notably, in Sample B, we have observed zero students who are actually 66 inches tall! We might feel like guessing the mean is almost certainly going to be wrong."
+      "The mean tells us where the middle of the data is, but it says nothing about how the data is arranged around that middle. To see why that matters for prediction, imagine two different samples of 100 students, both measured in inches.",
+      "In Sample A, every single one of the 100 students is exactly 66 inches tall — five and a half feet, with no variation at all. In Sample B, 50 of the students are 60 inches tall (five feet) and the other 50 are 72 inches tall (six feet). Nobody in Sample B is anywhere near 66 inches.",
+      "Now work out the mean of each. Sample A's mean is obviously 66. Sample B's mean is also 66, because 60 and 72 average to 66. So if we follow our baseline model and guess the mean, we predict 66 inches for an unseen student from either school. The predictions are identical.",
+      "But our confidence in those predictions should not be identical. For Sample A, guessing 66 is guaranteed to be exactly right. For Sample B, guessing 66 is guaranteed to be wrong by six inches every single time, because no student in that school is 66 inches tall. The mean is the same, but the amount we expect to miss by is completely different.",
+      "Use the widget to flip between the two samples and see the two distributions side by side. The lesson is that the mean alone is not enough to describe a dataset. We also need a way to measure its spread — how far the values tend to sit from the middle — and that is what the next few slides build.",
     ],
     keyTakeaways: [
-      'Both Sample A and Sample B share the exact same mean: 66 inches.',
-      'Sample A has zero spread; Sample B has high spread with two polarized clusters.',
-      'We need a metric to formally quantify and compare the spread of distributions.'
+      'Sample A and Sample B have exactly the same mean, 66 inches, so the baseline model predicts the same thing for both.',
+      'Sample A has no spread at all. Sample B has a lot of spread, in two clusters far from the mean.',
+      'To say how much we trust a mean-guess, we need a number that measures spread.',
     ],
-    widget: 'sample-comparison'
+    widget: 'sample-comparison',
   },
   {
     id: 'p1-3-deviations',
@@ -56,25 +57,26 @@ export const slides: Slide[] = [
     title: 'Deviations & The Zero-Sum Trap',
     subtitle: 'Why simple sum of deviations always cancels to zero',
     paragraphs: [
-      "It would be useful to have a metric to help us differentiate between the spread of these two samples. One thing we could do is calculate the difference between each observed student and the mean of the sample: subtracting the mean from each individual value produces a list of differences called deviations.",
-      "If we want to turn our list of deviations into a single metric, we might be tempted to just add them all up. The sum of the deviations for Sample A is 0, since none of the students differ from the mean.",
-      "Unfortunately, the sum of the deviations for Sample B is also 0! Because the mean is 66 inches, half of our deviations are -6 (60 minus 66) and the other half are +6 (72 minus 66). When we add fifty -6s and fifty +6s together, they cancel out to 0.",
-      "This isn't a fluke. The mean is always the exact mathematical fulcrum that perfectly balances the deviations in any dataset."
+      "We want a single number that captures how spread out a sample is, so that Sample A scores low and Sample B scores high. A natural first step is to ask, for each student, how far they are from the mean. Subtract the mean from each student's height and you get a list of differences. Each difference is called a deviation. A student who is 72 inches tall in a sample with mean 66 has a deviation of +6; a student who is 60 inches tall has a deviation of −6.",
+      "Now we have 100 deviations per sample, and we would like to collapse them into one number. The obvious thing to try is to add them all up. For Sample A this gives 0, which is what we want: nobody differs from the mean, so there is no spread.",
+      "The trouble appears with Sample B. Half the students have a deviation of −6 and half have a deviation of +6. Fifty −6s and fifty +6s add up to exactly 0. So the sum of deviations is 0 for Sample B too, even though Sample B is clearly more spread out. As a measure of spread, the plain sum has told us nothing.",
+      "This is not a coincidence of the numbers we happened to pick. The mean is defined in such a way that the deviations above it always exactly cancel the deviations below it. You can think of the mean as the balance point of the data, like the fulcrum of a seesaw: the total pull on one side is always matched by the total pull on the other. The widget shows this balance visually. Switch between the samples, or add a value of your own, and watch the mean shift so that the positive and negative deviations always sum to zero.",
+      "So the sum of raw deviations is useless as a measure of spread — not because the idea of deviations is wrong, but because the signs cancel. The fix is to stop the cancellation, and the next slide does that.",
     ],
     keyTakeaways: [
-      'Deviation = Observed Value − Sample Mean: (yᵢ − ȳ).',
-      'The sum of raw deviations always equals 0 because the mean is the center of gravity.',
-      'To measure total spread, we must eliminate sign cancellation.'
+      'A deviation is an observed value minus the sample mean: (yᵢ − ȳ).',
+      'The sum of raw deviations is always exactly 0, because the mean is the balance point of the data.',
+      'To measure total spread we need to stop positive and negative deviations from cancelling.',
     ],
     formula: {
       latex: '\\sum_{i=1}^{N} (y_i - \\bar{y}) \\equiv 0',
       explanation: 'The fundamental balancing property of the arithmetic mean in every dataset.',
       terms: [
         { symbol: 'y_i - \\bar{y}', meaning: 'Individual deviation from the mean' },
-        { symbol: '\\sum', meaning: 'Summation across all N observations' }
-      ]
+        { symbol: '\\sum', meaning: 'Summation across all N observations' },
+      ],
     },
-    widget: 'deviations-balance'
+    widget: 'deviations-balance',
   },
   {
     id: 'p1-4-tss',
@@ -83,27 +85,26 @@ export const slides: Slide[] = [
     title: 'Squaring Deviations & Total Sum of Squares (TSS)',
     subtitle: 'Why squaring is preferred over absolute values',
     paragraphs: [
-      "To avoid this balancing problem, we could either take the absolute value of the deviations or square them. Both methods make all the numbers positive, solving the cancellation problem.",
-      "However, squaring has the additional effect of disproportionately penalizing larger errors. A deviation of 10 squared becomes 100, while a deviation of 100 squared becomes 10,000.",
-      "This additional penalty for larger errors is often preferred in statistics, so summing the squared deviations is the standard approach.",
-      "If we take all of our deviations, square each one individually, and then sum them all up, we get a single metric called the Total Sum of Squares (TSS).",
-      "• For Sample A: TSS = 0 (since all deviations are 0).",
-      "• For Sample B: each deviation (6), squared is 36. Across 100 students (36 × 100), TSS = 3,600 squared inches."
+      "The cancellation problem comes from the minus signs. There are two easy ways to get rid of them. We could take the absolute value of each deviation, turning −6 into 6, or we could square each deviation, turning −6 into 36. Either way, every deviation becomes positive, and a sum of positive numbers cannot cancel to zero.",
+      "Both approaches work, but statistics almost always uses squaring, and it is worth understanding why. Squaring does more than remove the sign: it also makes big deviations count for much more than small ones. A deviation of 10 squared is 100, but a deviation of 100 squared is 10,000. The bigger miss is ten times as large, yet it contributes a hundred times as much to the total. In most settings that is considered a feature. Being wrong by a lot is usually much worse than being wrong by a little, and squaring builds that judgment into the metric.",
+      "So the procedure is: take each deviation, square it, and add up all the squares. The result is called the Total Sum of Squares, abbreviated TSS. It is our first real measure of spread.",
+      "Let us compute it for our two samples. In Sample A every deviation is 0, so every squared deviation is 0, and TSS is 0. In Sample B every deviation is either +6 or −6, and either way its square is 36. There are 100 students, so TSS is 36 × 100 = 3,600. Finally we have a number that separates the two samples: 0 for the sample with no spread, 3,600 for the sample with a lot of it.",
+      "The widget draws each squared deviation as a literal square whose side is the deviation. TSS is the total area of all those squares, which is a useful picture to hold onto. Notice the units, too: because we squared inches, TSS is measured in square inches, which is a slightly odd unit for a measure of height. We will fix that shortly.",
     ],
     keyTakeaways: [
-      'Squaring turns negative errors positive and penalizes larger errors exponentially.',
-      'TSS (Total Sum of Squares) = Σ(yᵢ − ȳ)²',
-      'Sample A TSS = 0 sq in; Sample B TSS = 3,600 sq in.'
+      'Squaring each deviation removes the sign and makes large deviations count for much more than small ones.',
+      'TSS (Total Sum of Squares) = Σ(yᵢ − ȳ)², the sum of all the squared deviations.',
+      'Sample A has TSS = 0 square inches; Sample B has TSS = 3,600 square inches.',
     ],
     formula: {
       latex: '\\text{TSS} = \\sum_{i=1}^{N} (y_i - \\bar{y})^2',
       explanation: 'The baseline measure of total variation in our dependent variable.',
       terms: [
         { symbol: '\\text{TSS}', meaning: 'Total Sum of Squares (in units squared)' },
-        { symbol: '(y_i - \\bar{y})^2', meaning: 'Squared deviation for observation i' }
-      ]
+        { symbol: '(y_i - \\bar{y})^2', meaning: 'Squared deviation for observation i' },
+      ],
     },
-    widget: 'tss-squares'
+    widget: 'tss-squares',
   },
   {
     id: 'p1-5-variance',
@@ -112,27 +113,27 @@ export const slides: Slide[] = [
     title: 'The Sample Size Flaw & Variance',
     subtitle: 'Averaging the squared deviations to compare datasets of any size',
     paragraphs: [
-      "Now let's say we took Sample A and Sample B and doubled the sample size of each. Sample A now consists of 200 students who are all exactly 66 inches tall. Sample B consists of 200 students, half of whom are 60 inches and half of whom are 72 inches.",
-      "The means for both samples do not change, but the TSS does. Sample A's TSS is still 0, but Sample B's TSS doubles from 3,600 to 7,200 (36 × 200).",
-      "This property of TSS, where simply adding more data points increases the value, isn't ideal if we only want to measure and compare the general spread of our data.",
-      "To solve this, we compute Variance: which takes the TSS and divides it by the size of the sample. Variance is simply the average of the squared deviations.",
-      "For Sample A, variance is 0. For Sample B, variance is 36 (7,200 / 200 = 36), which is the exact same variance we computed with 100 students (3,600 / 100 = 36)."
+      "TSS has one awkward property. Suppose we go back to both schools and measure twice as many students. Sample A now has 200 students who are all exactly 66 inches tall, and Sample B has 200 students, half at 60 inches and half at 72. Nothing about the shape of either sample has changed; we have simply collected more of the same.",
+      "The means do not change: both are still 66. But look at what happens to TSS. Sample A's TSS is still 0, but Sample B's TSS doubles from 3,600 to 7,200, because there are now 200 squared deviations of 36 to add up instead of 100. The spread of Sample B is exactly what it was, yet the number we are using to measure spread has doubled.",
+      "That is a problem if we want to compare the spread of two datasets of different sizes. A sample of 500 students would have a larger TSS than a sample of 50 even if the 50 were far more variable, simply because there are more terms in the sum. TSS measures total variation, and totals grow with sample size.",
+      "The fix is the same one we use whenever a total grows with the number of items: divide by the number of items to get an average. Divide TSS by the sample size and you have the average squared deviation, which is called the variance. Variance answers the question, \"how far from the mean is a typical student, in squared units?\"",
+      "Now the comparison works. Sample A has variance 0 whatever its size. Sample B with 100 students has variance 3,600 / 100 = 36, and Sample B with 200 students has variance 7,200 / 200 = 36. Same spread, same number. Use the sample-size buttons in the widget to confirm that TSS climbs as N grows while variance holds steady.",
     ],
     keyTakeaways: [
-      'TSS grows linearly with sample size N; Variance normalizes it.',
-      'Variance = TSS / N (or TSS / (N - 1) for sample estimation).',
-      'Sample B variance remains constant at 36 regardless of whether N=100 or N=200.'
+      'TSS grows whenever you add data, even if the spread has not changed, so it cannot be used to compare samples of different sizes.',
+      'Variance = TSS / N is the average squared deviation. In practice we divide by (N − 1); see the note.',
+      'Sample B has variance 36 whether we measure 100 students or 200.',
     ],
-    note: "When working with samples rather than full populations, dividing by (N - 1) rather than N corrects for sample bias (Bessel's correction). In both cases, the core concept is finding the average squared deviation.",
+    note: "You will see variance computed as TSS / (N − 1) rather than TSS / N. The reason is that we are using a sample to estimate the spread of a larger population, and dividing by N tends to underestimate it slightly. Dividing by N − 1 corrects for that; it is called Bessel's correction. For a sample of 100 the difference is tiny, and the idea is the same either way: variance is the average squared deviation.",
     formula: {
       latex: 's^2 = \\frac{\\text{TSS}}{N - 1} = \\frac{1}{N - 1} \\sum_{i=1}^{N} (y_i - \\bar{y})^2',
       explanation: 'Sample Variance: Average squared deviation with Bessel\'s correction.',
       terms: [
         { symbol: 's^2', meaning: 'Sample Variance (e.g. 36 in²)' },
-        { symbol: 'N - 1', meaning: 'Degrees of freedom (Bessel\'s correction for sample variance)' }
-      ]
+        { symbol: 'N - 1', meaning: 'Degrees of freedom (Bessel\'s correction for sample variance)' },
+      ],
     },
-    widget: 'variance-scaling'
+    widget: 'variance-scaling',
   },
   {
     id: 'p1-6-sd',
@@ -141,26 +142,26 @@ export const slides: Slide[] = [
     title: 'Standard Deviation: Returning to Original Units',
     subtitle: 'Taking the square root to measure average spread in inches',
     paragraphs: [
-      "We can take this simplification one step further. Because variance is measured in squared units (squared inches), we can take the square root of the variance to put our metric back into our original unit of measure.",
-      "This metric is called the Standard Deviation.",
-      "For Sample B, the variance is 36 squared inches; the square root of 36 is 6 inches.",
-      "This tells us that, on average, students in Sample B deviate from the mean by 6 inches.",
-      "Now we have the mean plus three new metrics to assess the spread of our data: Total Sum of Squares (TSS), Variance, and Standard Deviation."
+      "Variance solves the sample-size problem, but it still has the odd unit we noticed earlier. Because we squared deviations measured in inches, variance is measured in square inches. Saying that students vary from the mean by \"36 square inches\" is technically correct and completely unintuitive. Nobody thinks about height in square inches.",
+      "The remedy is simple: undo the squaring. Take the square root of the variance and the units go back to inches. This quantity is called the standard deviation, and it is the measure of spread you will see most often, precisely because it lives on the same scale as the data.",
+      "For Sample B, the variance is 36 square inches, and the square root of 36 is 6. So the standard deviation is 6 inches. That has a direct, plain-language meaning: students in Sample B typically sit about 6 inches away from the mean of 66. Look back at the sample and this is exactly right, since everyone is either 6 inches above or 6 inches below. For Sample A, the standard deviation is 0 inches, because nobody deviates at all.",
+      "It helps to keep the chain of ideas in view. We started with deviations, which cancel. We squared them and summed to get TSS, which grows with sample size. We divided by the sample size to get variance, which is in the wrong units. We took the square root to get standard deviation, which is in the right units. Each step fixed one problem with the step before.",
+      "We now have the mean, which tells us where the middle of the data is, and three related measures of spread: TSS, variance and standard deviation. Between them they describe a single variable well. The next part of the unit asks what changes when we have two variables instead of one.",
     ],
     keyTakeaways: [
-      'Standard Deviation = √(Variance) = √(TSS / (N - 1)).',
-      'Restores the metric to the original units of measurement (inches, not inches²).',
-      'Provides an intuitive scale: Sample B students deviate from 66" by an average of ±6".'
+      'Standard deviation = √(variance) = √(TSS / (N − 1)).',
+      'Taking the square root puts spread back into the original units (inches, not square inches).',
+      'In Sample B the standard deviation is 6 inches: a typical student is about 6 inches from the mean.',
     ],
     formula: {
       latex: 's = \\sqrt{s^2} = \\sqrt{\\frac{1}{N-1} \\sum_{i=1}^{N} (y_i - \\bar{y})^2}',
       explanation: 'Standard deviation puts spread back onto the original scale of measurement.',
       terms: [
         { symbol: 's', meaning: 'Sample Standard Deviation (in original units, e.g. inches)' },
-        { symbol: 's^2', meaning: 'Sample Variance (squared units)' }
-      ]
+        { symbol: 's^2', meaning: 'Sample Variance (squared units)' },
+      ],
     },
-    widget: 'standard-deviation'
+    widget: 'standard-deviation',
   },
 
   // --- PART 2 ---
@@ -171,18 +172,17 @@ export const slides: Slide[] = [
     title: 'New Information: Incorporating Shoe Size',
     subtitle: 'Moving beyond the baseline mean using auxiliary signals',
     paragraphs: [
-      "Let's start over. Same goal: we're going to estimate an unseen student's height. We have data on the heights of 100 other students from the same school.",
-      "But this time, we have some additional information: we know the shoe size of the unseen student, and we know both the height and the shoe size of the 100 other students.",
-      "In Part 1, we couldn't do better than guessing the mean and examining the spread of the height data to get a sense of how wrong we might possibly be. Having the unseen student's shoe size changes the game for us.",
-      "We might expect that larger feet are generally attached to taller people, and that smaller feet are generally attached to shorter people. Since we know our unseen student's shoe size, we may be able to do better than guess the mean.",
-      "First, we need to confirm our assumption that foot size and height tend to go together."
+      "Let us return to the original problem with one change. The goal is the same: predict the height of a student we have not met, using data on 100 other students from the same school. But this time we also know one more thing about the unseen student — their shoe size — and we know both the height and the shoe size of each of the 100 students in our data.",
+      "In Part 1 we had no information about the unseen student, so the best we could do was guess the mean and use the standard deviation to say roughly how wrong that guess might be. Knowing the shoe size potentially changes that. Most of us have a rough sense that people with bigger feet tend to be taller, and people with smaller feet tend to be shorter. If that is true, and if we know the unseen student has size 13 feet, we should probably guess something above the mean rather than the mean itself.",
+      "Notice what has happened to the shape of the problem. Instead of a single distribution of heights, we can now think about the distribution of heights among students with a given shoe size. Height is no longer something we predict in a vacuum; it is something we predict conditional on shoe size. That is the core idea behind every model in this course.",
+      "Before we lean on this, though, we should check that the assumption actually holds in our data. The widget shows the 100 students as a scatter plot, with shoe size on the horizontal axis and height on the vertical axis. Look at the overall shape of the cloud. Does it drift upward as you move to the right? If so, our hunch is supported, and the next slides develop a way to measure exactly how strongly the two variables go together.",
     ],
     keyTakeaways: [
-      'Unseen student has a known predictor variable: Shoe Size (X).',
-      'Instead of a single unconditional height distribution, we can model height conditional on shoe size.',
-      'We need a statistical tool to quantify how two variables vary together.'
+      'We now know one thing about the unseen student: their shoe size. That is our predictor variable, X.',
+      'Instead of predicting height on its own, we can predict height given a particular shoe size.',
+      'Before using shoe size, we need a way to measure how strongly two variables vary together.',
     ],
-    widget: 'shoe-height-scatter'
+    widget: 'shoe-height-scatter',
   },
   {
     id: 'p2-2-quadrants',
@@ -191,21 +191,18 @@ export const slides: Slide[] = [
     title: 'The Four Centered Quadrants',
     subtitle: 'Classifying bivariate relationships around the centroid of means',
     paragraphs: [
-      "To briefly recap calculating deviations: we take shoe size, calculate deviations by subtracting mean shoe size from each value. We do the same for height, giving us a deviation for height and a deviation for shoe size for each student.",
-      "Now, imagine we plot our height and shoe size data with height on the y-axis and shoe size on the x-axis, centered so that the mean values for height and shoe size are dead center.",
-      "Splitting the plot this way creates four quadrants to classify students:",
-      "• Taller than average, bigger feet: Top-Right (+ height dev, + shoe dev).",
-      "• Shorter than average, smaller feet: Bottom-Left (- height dev, - shoe dev).",
-      "• Taller than average, smaller feet: Top-Left (+ height dev, - shoe dev).",
-      "• Shorter than average, bigger feet: Bottom-Right (- height dev, + shoe dev).",
-      "If taller people have bigger feet, we expect data points to heavily concentrate in the Top-Right and Bottom-Left quadrants."
+      "In Part 1 we computed a deviation for each student's height by subtracting the mean height. We can do exactly the same thing for shoe size: subtract the mean shoe size from each student's shoe size. Now every student has two deviations, one for height and one for shoe size, and each deviation is either positive (above average) or negative (below average).",
+      "Plot the students with shoe size on the horizontal axis and height on the vertical axis, and then shift the axes so that they cross at the point where both means sit — mean shoe size and mean height. That crossing point is called the centroid, and it is the two-dimensional version of the balance point from Part 1.",
+      "Drawing the axes through the centroid divides the plot into four quadrants, and every student lands in exactly one of them depending on the signs of their two deviations. A student who is taller than average with bigger-than-average feet has two positive deviations and lands in the top-right. A student who is shorter than average with smaller feet has two negative deviations and lands in the bottom-left. Taller than average with smaller feet is top-left; shorter with bigger feet is bottom-right.",
+      "Here is why this is useful. If the hunch is right and taller people really do tend to have bigger feet, then most students should land in the top-right and bottom-left quadrants — the ones where both deviations have the same sign. If there were no relationship at all, students would be scattered about evenly across all four. And if the relationship were backwards, most would fall in the top-left and bottom-right.",
+      "Count the points in each quadrant in the widget. The imbalance between the same-sign quadrants and the opposite-sign quadrants is the raw material for the measure of association we build on the next slide.",
     ],
     keyTakeaways: [
-      'Centering the plot at (x̄, ȳ) partitions the scatter into four sign-based quadrants.',
-      'Points along the positive diagonal have matching deviation signs (+/+ or -/-).',
-      'Points along the negative diagonal have opposing deviation signs (+/- or -/+).'
+      'Each student now has two deviations: one for shoe size and one for height.',
+      'Centering the plot at the two means (x̄, ȳ) splits it into four quadrants based on the signs of the two deviations.',
+      'A positive relationship means most points sit in the two quadrants where the deviations share a sign (+/+ or −/−).',
     ],
-    widget: 'four-quadrants'
+    widget: 'four-quadrants',
   },
   {
     id: 'p2-3-covariance',
@@ -214,18 +211,16 @@ export const slides: Slide[] = [
     title: 'Cross-Products & Covariance',
     subtitle: 'Multiplying paired deviations and the strange unit problem',
     paragraphs: [
-      "If we multiply the deviation of height by the deviation of shoe size for each student, we end up with positive values for students in the Taller/Bigger and Shorter/Smaller quadrants (positive × positive = +, negative × negative = +).",
-      "In contrast, we get negative values for students in the Taller/Smaller and Shorter/Bigger quadrants (positive × negative = -).",
-      "If we add these all together, we get the Sum of Cross-Products. Because totals increase with sample size, we divide by sample size (N - 1) to get the average of the cross-products: this is Covariance.",
-      "• Positive Covariance: more students follow the Taller/Bigger + Shorter/Smaller trend.",
-      "• Negative Covariance: more students follow the Taller/Smaller + Shorter/Bigger trend.",
-      "• Near-Zero Covariance: quadrants cancel out evenly, indicating no linear trend.",
-      "The units of covariance are inches × barleycorns (the unit of American shoe sizes)!"
+      "The quadrant picture suggests a way to turn \"most points are in the same-sign quadrants\" into a number. For each student, multiply their height deviation by their shoe-size deviation. This product is called a cross-product, and its sign tells you which kind of quadrant the student is in.",
+      "Think through the four cases. A student in the top-right has two positive deviations, and positive times positive is positive. A student in the bottom-left has two negative deviations, and negative times negative is also positive. So every student in the same-sign quadrants contributes a positive cross-product. A student in the top-left or bottom-right has one positive and one negative deviation, so their cross-product is negative.",
+      "Now add up all 100 cross-products. If most students are in the same-sign quadrants, the positives outweigh the negatives and the total is positive. If most are in the opposite-sign quadrants, the total is negative. If they are spread evenly, the positives and negatives roughly cancel and the total is near zero. This total is called the sum of cross-products.",
+      "Just like TSS, a sum grows as we add more students, so we divide by the sample size (again using N − 1) to get an average cross-product. That average is called the covariance. Its sign tells us the direction of the relationship: positive covariance means the two variables tend to be above average together and below average together; negative covariance means one tends to be high when the other is low; covariance near zero means no consistent linear pattern.",
+      "Covariance has one drawback that we need to face. Its units are the product of the two variables' units. Height is in inches and American shoe sizes are, believe it or not, measured in a unit called barleycorns, so our covariance is measured in inches × barleycorns. That is not a quantity anyone can picture, and it means covariance changes if you switch to centimetres or European shoe sizes even though the underlying relationship has not changed at all. The next slide fixes this.",
     ],
     keyTakeaways: [
-      'Covariance = Average of (xᵢ − x̄)(yᵢ − ȳ).',
-      'Sign indicates the direction of association (positive, negative, or none).',
-      'Problem: Covariance has awkward composite units (inches × barleycorns) and depends on the scale of measurement.'
+      'A cross-product is one student\'s shoe-size deviation multiplied by their height deviation.',
+      'Covariance is the average cross-product. Its sign gives the direction of the relationship: positive, negative or none.',
+      'Covariance is measured in awkward composite units (inches × barleycorns) and changes if you change the units.',
     ],
     formula: {
       latex: '\\text{Cov}(X, Y) = \\frac{1}{N - 1} \\sum_{i=1}^{N} (x_i - \\bar{x})(y_i - \\bar{y})',
@@ -233,10 +228,10 @@ export const slides: Slide[] = [
       terms: [
         { symbol: 'x_i - \\bar{x}', meaning: 'Shoe size deviation (in barleycorns)' },
         { symbol: 'y_i - \\bar{y}', meaning: 'Height deviation (in inches)' },
-        { symbol: '\\text{Cov}', meaning: 'Covariance (units: inches × barleycorns)' }
-      ]
+        { symbol: '\\text{Cov}', meaning: 'Covariance (units: inches × barleycorns)' },
+      ],
     },
-    widget: 'covariance-calc'
+    widget: 'covariance-calc',
   },
   {
     id: 'p2-4-pearsons-r',
@@ -245,25 +240,26 @@ export const slides: Slide[] = [
     title: 'Pearson\'s Correlation Coefficient (r)',
     subtitle: 'Creating a unitless metric bounded between -1 and +1',
     paragraphs: [
-      "Now, inches × barleycorns is not a particularly helpful unit of measure, so we need to make our metric unitless.",
-      "To do so, we take the standard deviation of height (inches) and multiply it by the standard deviation of shoe size (barleycorns). This produces a denominator that is also in inches × barleycorns.",
-      "We then divide covariance by this product of standard deviations. The units cancel out completely, resulting in a pure, unitless value: Pearson's correlation coefficient, abbreviated as r.",
-      "Pearson's r ranges strictly from -1.0 (perfect negative linear relationship) through 0 (no linear association) to +1.0 (perfect positive linear relationship)."
+      "Covariance tells us the direction of a relationship, but its size is hard to interpret because it depends on the units of both variables. A covariance of 12 inches × barleycorns is not obviously large or small. We would like a version of covariance that is unitless, so that the same number means the same thing regardless of how the variables were measured.",
+      "The trick is to divide by something that has the same units as covariance. We already have the standard deviation of height, which is in inches, and we can compute the standard deviation of shoe size, which is in barleycorns. Multiply those two together and the product is in inches × barleycorns — exactly the units of covariance.",
+      "So divide covariance by the product of the two standard deviations. The inches cancel, the barleycorns cancel, and what remains is a pure number with no units at all. This number is Pearson's correlation coefficient, written r. Switch heights to centimetres or shoe sizes to European sizing and r does not change, because the change of units affects the numerator and the denominator in exactly the same way.",
+      "Dividing by the standard deviations also has a second effect: it forces r to lie between −1 and +1. An r of +1 means every point lies exactly on an upward-sloping straight line; an r of −1 means every point lies exactly on a downward-sloping line; an r of 0 means there is no linear relationship at all. Values in between describe how tightly the cloud of points hugs a line. In practice, a correlation like 0.7 or 0.8 between shoe size and height would be considered strong.",
+      "Use the noise slider in the widget to spread the points out and watch r shrink toward zero, then tighten them and watch it climb toward 1. Notice that r captures two things at once: its sign gives the direction of the relationship, and its distance from zero gives the strength.",
     ],
     keyTakeaways: [
-      'r = Cov(X, Y) / (sₓ · sᵧ).',
-      'The units in the numerator and denominator cancel out, leaving a pure unitless number.',
-      'r tells us both the direction (sign) and strength (magnitude |r| ≤ 1) of the association.'
+      'r = Cov(X, Y) / (sₓ · sᵧ): covariance divided by the product of the two standard deviations.',
+      'The units cancel, so r is a pure number that does not depend on how the variables were measured.',
+      'r always lies between −1 and +1. Its sign gives the direction of the relationship and its size gives the strength.',
     ],
     formula: {
       latex: 'r = \\frac{\\text{Cov}(X,Y)}{s_x s_y} = \\frac{\\sum (x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum (x_i - \\bar{x})^2 \\sum (y_i - \\bar{y})^2}}',
       explanation: 'Pearson\'s r: Standardized covariance, completely invariant to units of measurement.',
       terms: [
         { symbol: 'r', meaning: 'Correlation coefficient (-1 ≤ r ≤ 1)' },
-        { symbol: 's_x, s_y', meaning: 'Standard deviations of X and Y' }
-      ]
+        { symbol: 's_x, s_y', meaning: 'Standard deviations of X and Y' },
+      ],
     },
-    widget: 'pearsons-r'
+    widget: 'pearsons-r',
   },
 
   // --- PART 3 ---
@@ -274,18 +270,18 @@ export const slides: Slide[] = [
     title: 'From Describing Data to Making Predictions',
     subtitle: 'Drawing lines through noisy scatter clouds',
     paragraphs: [
-      "So we now know how to calculate Pearson's r: a unitless metric that indicates the direction and strength of an association. We are now going to shift from describing our data to making predictions.",
-      "By predictions, we mean that given a new student's shoe size x, we will develop a model that allows us to estimate their height y.",
-      "How are we going to get a specific height prediction for any shoe size? We want to incorporate shoe size using a straight line through our data.",
-      "We can describe any straight line by two numbers: the slope (how much y changes for each unit increase in x) and the intercept (where the line crosses the y-axis: ŷ = mx + b).",
-      "Real-world data is rarely a neat line; it is a noisy cloud. If we draw a line with a ruler, how do we know if it's any good?"
+      "We now have Pearson's r, a unitless number that tells us the direction and strength of the association between shoe size and height. That is a description of the data we have. Part 3 turns to the original goal, which was prediction: given a new student's shoe size, produce a specific guess for their height.",
+      "The plan is to draw a straight line through the scatter plot and use it as a lookup. Find the new student's shoe size on the horizontal axis, go up to the line, and read off the height on the vertical axis. A line is a very simple model, but it is exactly the right one to start with, because it turns the vague idea \"bigger feet, taller person\" into a specific number for every possible shoe size.",
+      "Any straight line can be described by just two numbers. The slope says how much height changes for each one-unit increase in shoe size; a slope of 2 would mean each extra shoe size goes with about 2 extra inches. The intercept says where the line crosses the vertical axis, which is the predicted height for a shoe size of zero. Together they give the familiar equation ŷ = mx + b, where the hat on ŷ is a reminder that this is a predicted height, not an observed one.",
+      "The difficulty is that real data does not sit on a line. It forms a noisy cloud, and you could draw many plausible lines through it. If you took a ruler and drew one by eye, how would you know whether it was any good? How would you decide between two candidate lines that both look reasonable?",
+      "Try it in the widget. Drag the slope and intercept controls to draw your own line through the students. The widget reports an error score for whatever line you draw; the next two slides explain exactly what that score is and where it comes from.",
     ],
     keyTakeaways: [
-      'A prediction model maps an input X (shoe size) to a predicted Ŷ (height).',
-      'A linear model has two parameters: slope m and intercept b (ŷ = mx + b).',
-      'We need a formal objective metric to measure how "wrong" any candidate line is.'
+      'A prediction model takes an input (shoe size, X) and produces a predicted output (height, Ŷ).',
+      'A straight line is described by two numbers: the slope m and the intercept b, giving ŷ = mx + b.',
+      'Many lines could be drawn through a noisy cloud, so we need a way to score how wrong each one is.',
     ],
-    widget: 'scatter-ruler'
+    widget: 'scatter-ruler',
   },
   {
     id: 'p3-2-residuals',
@@ -294,18 +290,16 @@ export const slides: Slide[] = [
     title: 'Residuals: Actual vs. Predicted (y - ŷ)',
     subtitle: 'Why the sum of residuals balances to zero for any line through the centroid',
     paragraphs: [
-      "To evaluate a line, we look at the difference between what the line predicted for y at each x (ŷ) and the actual observed y value.",
-      "This difference is called the residual: residual = y − ŷ (actual minus predicted).",
-      "• Positive residual: actual point sits ABOVE the line (the line under-predicted).",
-      "• Negative residual: actual point sits BELOW the line (the line over-predicted).",
-      "• Zero residual: the line predicted height with 100% precision.",
-      "If we simply sum up the residuals, positive and negative errors cancel each other out to zero!",
-      "In fact, it is mathematically guaranteed that ANY line passing through the centroid of means (x̄, ȳ) has residuals that perfectly sum to zero."
+      "To score a line, we ask how far off its predictions are. For each student, the line predicts a height ŷ based on that student's shoe size. We also know the student's actual height y. The difference between them, actual minus predicted, is called the residual. It is the error the line makes on that one student.",
+      "The sign of a residual tells you which way the line was wrong. A positive residual means the actual point sits above the line: the line predicted too low. A negative residual means the point sits below the line: the line predicted too high. A residual of zero means the line passed exactly through the point. In the widget, positive residuals are drawn as one colour and negative as another, so you can see at a glance where the line is under- and over-predicting.",
+      "This should feel familiar. In Part 1, a deviation measured how far a student's height was from the mean. A residual measures how far a student's height is from the line. The line is doing the job the mean did before, except that it gives a different prediction for each shoe size instead of the same prediction for everyone.",
+      "And the familiar problem comes with it. If we add up all the residuals to get a total error, the positive and negative ones cancel. Rotate the slope in the widget and watch the running total. For any line that passes through the centroid — the point at mean shoe size and mean height — the residuals sum to exactly zero, no matter how steep or shallow the line is. A wildly wrong line can have a total residual of zero.",
+      "So the sum of residuals cannot tell a good line from a bad one, for exactly the reason the sum of deviations could not measure spread. And the fix is the one we already know.",
     ],
     keyTakeaways: [
-      'Residual eᵢ = yᵢ − ŷᵢ (actual observed minus predicted value).',
-      'Sum of raw residuals Σ(yᵢ − ŷᵢ) = 0 for any line passing through (x̄, ȳ).',
-      'Just like deviations in Part 1, we must square residuals to measure true inaccuracy.'
+      'A residual is actual minus predicted: eᵢ = yᵢ − ŷᵢ. Positive means the point is above the line, negative means below.',
+      'For any line through the centroid (x̄, ȳ), the residuals sum to zero, so the plain sum cannot score a line.',
+      'Just as with deviations in Part 1, we need to square the residuals before adding them up.',
     ],
     formula: {
       latex: 'e_i = y_i - \\hat{y}_i = y_i - (m x_i + b)',
@@ -313,10 +307,10 @@ export const slides: Slide[] = [
       terms: [
         { symbol: 'y_i', meaning: 'Actual observed height' },
         { symbol: '\\hat{y}_i', meaning: 'Predicted height from the model line' },
-        { symbol: 'e_i', meaning: 'Residual error' }
-      ]
+        { symbol: 'e_i', meaning: 'Residual error' },
+      ],
     },
-    widget: 'residuals-balance'
+    widget: 'residuals-balance',
   },
   {
     id: 'p3-3-rss',
@@ -325,26 +319,26 @@ export const slides: Slide[] = [
     title: 'Residual Sum of Squares (RSS)',
     subtitle: 'The ultimate scoreboard for comparing candidate regression lines',
     paragraphs: [
-      "We solve the cancellation problem the same way we did before: we square the residuals first, and then add them all together.",
-      "This creates a single value indicating the total error or incorrectness of our line: the Residual Sum of Squares (RSS).",
-      "If we compare two lines drawn through our student dataset, the line with the lower RSS is the clear winner — its predictions are closer to the overall pattern of the data.",
-      "Visually, you can imagine each residual as the side of a square. RSS is the total combined area of all these error squares!",
-      "Our goal is not just to guess better lines; we want to find the one line that minimizes RSS across all infinite possible lines."
+      "We handle the cancellation the same way we did in Part 1: square each residual first, then add the squares together. Squaring makes every term positive so nothing cancels, and it makes large errors count for much more than small ones, which is usually what we want from a measure of how wrong a model is.",
+      "The result is a single number called the Residual Sum of Squares, or RSS. It is the total squared error of the line across all 100 students. A line that passes close to most of the points has a small RSS; a line that misses badly has a large one. This is the error score the earlier widget was reporting when you dragged your own line around.",
+      "RSS gives us a clean way to compare lines. Draw two candidate lines through the same data, compute the RSS of each, and the one with the smaller RSS is the better fit. There is no judgment call involved; it is simply the line whose predictions are closer to the actual heights overall.",
+      "The widget draws each squared residual as an actual square, with the residual as its side length, sitting on the line at that point. RSS is the total area of all the squares. This is the same picture we used for TSS, and it is worth keeping in mind: TSS was the total squared distance from the mean, and RSS is the total squared distance from the line.",
+      "Drag the line around in the widget and try to make the total area of the squares as small as you can. You will find you can get close but that it is hard to be sure you have found the very best line by hand. That raises the final question of the unit: out of all the lines we could possibly draw, which one has the smallest RSS, and is there a way to find it directly?",
     ],
     keyTakeaways: [
-      'RSS = Σ(yᵢ − ŷᵢ)² = Σ eᵢ².',
-      'Lower RSS means smaller overall prediction error.',
-      'The "best" line is the one that mathematically minimizes the sum of squared residual areas.'
+      'RSS = Σ(yᵢ − ŷᵢ)², the sum of the squared residuals. It is the total error of a line.',
+      'Lower RSS means the line\'s predictions are closer to the actual data overall.',
+      'The best line is the one with the smallest possible RSS. The next slide shows how to find it.',
     ],
     formula: {
       latex: '\\text{RSS} = \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2 = \\sum_{i=1}^{N} [y_i - (m x_i + b)]^2',
       explanation: 'Residual Sum of Squares (RSS): The total squared prediction error of the line.',
       terms: [
         { symbol: '\\text{RSS}', meaning: 'Residual Sum of Squares' },
-        { symbol: '(y_i - \\hat{y}_i)^2', meaning: 'Squared residual for student i' }
-      ]
+        { symbol: '(y_i - \\hat{y}_i)^2', meaning: 'Squared residual for student i' },
+      ],
     },
-    widget: 'residual-squares'
+    widget: 'residual-squares',
   },
   {
     id: 'p3-4-best-fit',
@@ -353,16 +347,16 @@ export const slides: Slide[] = [
     title: 'The Line of Best Fit & Closed-Form Formula',
     subtitle: 'Connecting r, standard deviations, and the point of means',
     paragraphs: [
-      "We don't need to guess random lines and test their RSS one by one. There is an exact, closed-form mathematical solution for the line of best fit (Ordinary Least Squares).",
-      "The pieces we computed in Parts 1 and 2 assemble directly into the optimal model:",
-      "1. Optimal Slope: m = r · (s_y / s_x). The correlation r scaled by the ratio of the spreads of Y and X.",
-      "2. Optimal Intercept: b = ȳ − m · x̄. The line is anchored to pass directly through the centroid of means (x̄, ȳ).",
-      "With these two equations, we produce the line with the lowest possible RSS out of all infinite lines. We can now take our unseen student's shoe size and forecast their height with optimal statistical confidence!"
+      "We could hunt for the best line by trial and error, adjusting the slope and intercept until RSS stops getting smaller. But there is no need. It turns out there is an exact formula for the line with the smallest possible RSS, and — this is the satisfying part — it is built entirely out of quantities we have already computed in this unit. The line it produces is called the line of best fit, and the method is called Ordinary Least Squares, or OLS, because it finds the least possible sum of squares.",
+      "The slope of the best line is Pearson's r multiplied by the ratio of the two standard deviations: m = r · (s_y / s_x). Read it in two pieces. The correlation r says how strongly and in which direction the variables move together. The ratio s_y / s_x converts that into the right units, inches of height per unit of shoe size, and scales it by how spread out each variable is. If height varies a lot and shoe size varies little, each step in shoe size has to account for a lot of height, so the slope is steep.",
+      "The intercept is then chosen so that the line passes through the centroid: b = ȳ − m · x̄. In words, start at the mean height, and subtract however much the slope would move you between a shoe size of zero and the mean shoe size. This guarantees the best line goes through the point of means, which is why the residuals-balance property from two slides ago always held.",
+      "Put the two pieces together and you have the line ŷ = mx + b that minimizes RSS over every line that could possibly be drawn. Nothing else does better. And now the original problem is solved: take the unseen student's shoe size, plug it in as x, and the line returns a predicted height that uses everything the data can tell us about how the two variables go together.",
+      "The widget walks through the four steps — r, the spread ratio, the slope, the intercept — and then lets you enter a shoe size and read off the prediction. Compare that prediction to the mean-guess from the very first slide. Whenever r is meaningfully different from zero, the line will beat the baseline, and that improvement is the whole point of regression.",
     ],
     keyTakeaways: [
-      'Slope m = r · (sᵧ / sₓ): How much height changes per shoe size unit.',
-      'Intercept b = ȳ − m·x̄: Anchors line through the balance point of the data.',
-      'This line guarantees the minimum possible Residual Sum of Squares (Ordinary Least Squares).'
+      'Slope m = r · (sᵧ / sₓ): the correlation, rescaled into inches of height per unit of shoe size.',
+      'Intercept b = ȳ − m · x̄: chosen so the line passes through the point of means (x̄, ȳ).',
+      'This line has the smallest RSS of any line that could be drawn. That is what Ordinary Least Squares means.',
     ],
     formula: {
       latex: 'm = r \\cdot \\frac{s_y}{s_x}, \\quad b = \\bar{y} - m \\bar{x}',
@@ -371,10 +365,10 @@ export const slides: Slide[] = [
         { symbol: 'm', meaning: 'Optimal slope (inches per shoe size)' },
         { symbol: 'b', meaning: 'Optimal y-intercept' },
         { symbol: 'r', meaning: 'Pearson\'s correlation coefficient' },
-        { symbol: 's_y / s_x', meaning: 'Ratio of standard deviations' }
-      ]
+        { symbol: 's_y / s_x', meaning: 'Ratio of standard deviations' },
+      ],
     },
-    widget: 'best-fit-regression'
+    widget: 'best-fit-regression',
   },
 
   // --- SUMMARY / SANDBOX ---
@@ -385,15 +379,16 @@ export const slides: Slide[] = [
     title: 'Statistical Mastery: Interactive Sandbox & Challenge',
     subtitle: 'Synthesize all concepts: Mean, TSS, Variance, SD, Covariance, r, RSS, and Regression',
     paragraphs: [
-      "You have traveled from guessing a baseline mean, through deviations and TSS, to covariance, Pearson's r, residuals, and Ordinary Least Squares regression.",
-      "Use this interactive sandbox to experiment with custom datasets, adjust noise and sample sizes, inspect live statistical formulas, and test your comprehension in the recap challenge below!"
+      "Step back and look at the whole path. We began with the simplest possible prediction, the mean, and asked how wrong it might be. Answering that led us through deviations, the squaring trick, TSS, variance and standard deviation — a set of tools for describing one variable. Adding a second variable led to cross-products, covariance and Pearson's r, tools for describing how two variables move together. And finally, wanting a prediction rather than a description led to lines, residuals, RSS and the least-squares formula that finds the best line.",
+      "Notice how often the same idea came back. Deviations cancelled, so we squared them; residuals cancelled, so we squared them too. TSS grew with sample size, so we averaged it; the sum of cross-products grew with sample size, so we averaged that too. Covariance had messy units, so we divided by standard deviations to cancel them. Once you see these moves, most of the rest of the course is variations on them.",
+      "The sandbox below puts all of it in one place. Generate your own dataset, adjust the noise and the sample size, and watch every statistic in the chain update live: the means, TSS, variance, standard deviation, covariance, r, the fitted slope and intercept, and RSS. Then try the recap challenge to check how well the ideas have stuck.",
     ],
     keyTakeaways: [
-      'Baseline Model: Mean ȳ minimizes squared error with zero prior info.',
-      'Spread Metrics: TSS scales with N; Variance normalizes by N-1; Standard Deviation restores original units.',
-      '2D Association: Covariance detects direction in composite units; Pearson\'s r standardizes it to [-1, 1].',
-      'Linear Model: OLS minimizes RSS by finding the line ŷ = mx + b using m = r(sᵧ/sₓ).'
+      'Baseline model: with no other information, guessing the mean ȳ keeps squared error as small as possible.',
+      'Spread of one variable: TSS grows with N; variance divides by N − 1; standard deviation takes the square root to restore the original units.',
+      'Association of two variables: covariance gives the direction in composite units; Pearson\'s r standardizes it to the range −1 to +1.',
+      'Linear model: OLS finds the line ŷ = mx + b with the smallest RSS, using m = r (sᵧ / sₓ) and b = ȳ − m x̄.',
     ],
-    widget: 'grand-sandbox'
-  }
+    widget: 'grand-sandbox',
+  },
 ];
