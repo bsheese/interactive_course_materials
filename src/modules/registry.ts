@@ -36,7 +36,7 @@ export const MODULES: ModuleMeta[] = [
     title: 'Choosing a Chart: A Seaborn Plot-Type Tour',
     description:
       'Histograms, box and violin plots, bar and strip plots, scatter and regression plots, and a correlation heatmap, all over the same Palmer Penguins data, plus a sandbox to try both on housing data too.',
-    status: 'draft',
+    status: 'published',
     sourceUnit: '07_data_vis',
     notebookUrl: 'https://github.com/bsheese/cs225/tree/main/07_data_vis',
     load: () => import('./225/07_plots/index'),

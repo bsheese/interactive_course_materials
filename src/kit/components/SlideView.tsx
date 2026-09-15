@@ -74,7 +74,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
                 : 'grid grid-cols-1 lg:grid-cols-12 gap-8 items-start'
             }
           >
-            {/* Left: narrative, formula, takeaways */}
+            {/* Left: narrative, formula, note */}
             {!widgetOnly && (
               <div className="lg:col-span-5 space-y-5">
                 <div className="bg-white border border-[#1A1A1A]/10 rounded-sm p-6 space-y-3.5 shadow-sm">
@@ -98,23 +98,6 @@ export const SlideView: React.FC<SlideViewProps> = ({
                   />
                 )}
 
-                {slide.keyTakeaways && slide.keyTakeaways.length > 0 && (
-                  <div className="bg-[#ECE8E1]/80 border border-[#1A1A1A]/10 rounded-sm p-5 space-y-3 shadow-xs">
-                    <span className="text-[10px] font-bold text-[#1A1A1A] uppercase tracking-[0.2em] flex items-center gap-1.5 pb-1 border-b border-[#1A1A1A]/10">
-                      <Sparkles className="w-3.5 h-3.5 text-[#E67E22]" />
-                      Key Takeaways
-                    </span>
-                    <ul className="space-y-2 text-xs text-[#333333]">
-                      {slide.keyTakeaways.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#E67E22] shrink-0 mt-1.5"></span>
-                          <span className="leading-relaxed">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
                 {slide.note && (
                   <div className="p-4 bg-white border-l-2 border-l-[#E67E22] border-y border-r border-[#1A1A1A]/10 rounded-sm text-xs text-[#4A4A4A] space-y-1.5 shadow-xs">
                     <div className="flex items-center gap-1.5 text-[#1A1A1A] font-bold text-[10px] uppercase tracking-wider">
@@ -127,13 +110,32 @@ export const SlideView: React.FC<SlideViewProps> = ({
               </div>
             )}
 
-            {/* Right: the live widget */}
+            {/* Right: the live widget, then the takeaways. Keeping the
+                summary out of the left column leaves the exposition room to
+                breathe; readers meet it after they have played with the widget. */}
             <div className={widgetOnly ? 'space-y-4' : 'lg:col-span-7 space-y-4'}>
               {Widget && <Widget />}
               {missingWidget && (
                 <div className="p-4 bg-white border border-dashed border-[#C0392B]/40 rounded-sm text-xs text-[#C0392B] font-mono">
                   No widget registered under "{slide.widget}" — add it to this module's
                   <span className="font-bold"> widgets</span> map.
+                </div>
+              )}
+
+              {!widgetOnly && slide.keyTakeaways && slide.keyTakeaways.length > 0 && (
+                <div className="bg-[#ECE8E1]/80 border border-[#1A1A1A]/10 rounded-sm p-5 space-y-3 shadow-xs">
+                  <span className="text-[10px] font-bold text-[#1A1A1A] uppercase tracking-[0.2em] flex items-center gap-1.5 pb-1 border-b border-[#1A1A1A]/10">
+                    <Sparkles className="w-3.5 h-3.5 text-[#E67E22]" />
+                    Key Takeaways
+                  </span>
+                  <ul className="space-y-2 text-xs text-[#333333]">
+                    {slide.keyTakeaways.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#E67E22] shrink-0 mt-1.5"></span>
+                        <span className="leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>
