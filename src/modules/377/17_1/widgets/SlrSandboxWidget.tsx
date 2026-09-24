@@ -111,6 +111,20 @@ export const SlrSandboxWidget: React.FC = () => {
             <Slider label="curvature" value={curvature} min={-0.4} max={0.4} step={0.02} onChange={setCurvature} display={curvature.toFixed(2)} />
           </div>
 
+          {curvature !== 0 && (
+            <div className="flex items-center justify-between gap-3 text-[11px] font-sans text-[#4A4A4A]">
+              <span className="leading-relaxed">
+                Curvature is on, so the world is a curve with no single true slope, and "CI covers truth?" reads n/a.
+              </span>
+              <button
+                onClick={() => setCurvature(0)}
+                className="flex items-center gap-1 shrink-0 px-2 py-1 bg-[#F5F2ED] hover:bg-[#1A1A1A] hover:text-white border border-[#1A1A1A]/15 rounded-sm transition-colors"
+              >
+                <RotateCcw className="w-3 h-3" /> Reset curvature to 0
+              </button>
+            </div>
+          )}
+
           <div>
             <span className="text-[10px] uppercase tracking-[0.14em] text-[#767676] font-bold">
               Residuals vs. fitted
@@ -137,6 +151,11 @@ export const SlrSandboxWidget: React.FC = () => {
               label="CI covers truth?"
               value={curvature !== 0 ? 'n/a' : ciLo <= trueSlope && trueSlope <= ciHi ? 'yes' : 'no'}
               tone={curvature !== 0 ? 'neutral' : ciLo <= trueSlope && trueSlope <= ciHi ? 'good' : 'bad'}
+              hint={
+                curvature !== 0
+                  ? 'n/a: curvature is on, so there is no single true slope to cover. Reset curvature to 0 to check coverage.'
+                  : 'Does the 95% CI for the slope contain the true slope you set?'
+              }
             />
           </div>
 
