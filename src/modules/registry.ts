@@ -64,6 +64,17 @@ export const MODULES: ModuleMeta[] = [
     notebookUrl: 'https://github.com/bsheese/cs377/tree/main/17_regression_crossval/17_1_SLR',
     load: () => import('./377/17_1/index'),
   },
+  {
+    course: '377',
+    id: '17_2',
+    title: 'Multiple Regression, Regularization & Trees',
+    description:
+      'The Ames serial and its trees notebook: leakage and encoding, forward selection and VIF, Ridge and Lasso, grid search, nested cross-validation, and regression trees, forests and boosting.',
+    status: 'published',
+    sourceUnit: '17_regression_crossval/17_2_MLR',
+    notebookUrl: 'https://github.com/bsheese/cs377/tree/main/17_regression_crossval/17_2_MLR',
+    load: () => import('./377/17_2/index'),
+  },
 ];
 
 export const courseById = (id: string): CourseMeta | undefined =>
