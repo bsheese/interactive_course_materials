@@ -97,7 +97,7 @@ export const ForwardSelectionWidget: React.FC = () => {
 
       <Callout tone={done ? 'good' : 'accent'}>
         {done
-          ? 'No remaining candidate adds enough to be worth a column. A stopping rule such as sklearn’s "auto" would end the search around here. Notice which strong solo performers were never hired: their information was already in the model.'
+          ? 'No remaining candidate adds enough to be worth a column. A stopping rule (sklearn’s tol setting) would end the search around here. Notice which strong solo performers were never hired: their information was already in the model.'
           : hired.length === 0
             ? 'Round 1 is a solo audition: each bar is the CV R² of a one-feature model. Hire the best, then watch how the bars change in round 2.'
             : 'The dashed outline is how well each feature did on its own. When a bar has shrunk far inside its outline, that feature is mostly repeating what the model already knows.'}
