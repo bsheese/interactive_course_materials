@@ -42,6 +42,17 @@ export const MODULES: ModuleMeta[] = [
     load: () => import('./225/07_plots/index'),
   },
   {
+    course: '225',
+    id: '08_cleaning',
+    title: 'Data Cleaning: From Messy to Analysis-Ready',
+    description:
+      'The five kinds of mess, then dropping and filling missing values, type conversion, string cleaning, regex, dates, and a full cleaning pipeline followed one step at a time.',
+    status: 'draft',
+    sourceUnit: '08_data_cleaning',
+    notebookUrl: 'https://github.com/bsheese/cs225/tree/main/08_data_cleaning',
+    load: () => import('./225/08_cleaning/index'),
+  },
+  {
     course: '377',
     id: '17_0',
     title: 'Statistical Foundations',
